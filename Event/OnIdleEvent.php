@@ -14,6 +14,11 @@ class OnIdleEvent extends AMQPEvent
     const NAME = AMQPEvent::ON_IDLE;
 
     /**
+     * @var Consumer
+     */
+    private $consumer;
+
+    /**
      * @var bool
      */
     private $forceStop;
@@ -25,9 +30,16 @@ class OnIdleEvent extends AMQPEvent
      */
     public function __construct(Consumer $consumer)
     {
-        $this->setConsumer($consumer);
-
+        $this->consumer = $consumer;
         $this->forceStop = true;
+    }
+
+    /**
+     * @return Consumer
+     */
+    public function getConsumer(): Consumer
+    {
+        return $this->consumer;
     }
 
     /**

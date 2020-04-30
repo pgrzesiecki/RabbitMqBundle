@@ -4,6 +4,7 @@ namespace OldSound\RabbitMqBundle\Tests\Event;
 
 use OldSound\RabbitMqBundle\Event\AfterProcessingMessageEvent;
 use OldSound\RabbitMqBundle\RabbitMq\Consumer;
+use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +15,9 @@ use PHPUnit\Framework\TestCase;
  */
 class AfterProcessingMessageEventTest extends TestCase
 {
+    /**
+     * @return Consumer
+     */
     protected function getConsumer()
     {
         return new Consumer(
@@ -30,8 +34,9 @@ class AfterProcessingMessageEventTest extends TestCase
     {
         $AMQPMessage = new AMQPMessage('body');
         $consumer = $this->getConsumer();
-        $event = new AfterProcessingMessageEvent($consumer, $AMQPMessage);
+        $event = new AfterProcessingMessageEvent($consumer, $AMQPMessage, ConsumerInterface::MSG_ACK);
         $this->assertSame($AMQPMessage, $event->getAMQPMessage());
         $this->assertSame($consumer, $event->getConsumer());
+        $this->assertSame(ConsumerInterface::MSG_ACK, $event->getProcessFlag());
     }
 }

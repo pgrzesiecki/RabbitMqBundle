@@ -2,17 +2,19 @@
 
 namespace OldSound\RabbitMqBundle\Event;
 
+use Error;
+use Exception;
 use OldSound\RabbitMqBundle\RabbitMq\Consumer;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * Class AfterProcessingMessageEvent
+ * Class OnErrorEvent
  *
  * @package OldSound\RabbitMqBundle\Event
  */
-class AfterProcessingMessageEvent extends AMQPEvent
+class OnErrorEvent extends AMQPEvent
 {
-    const NAME = AMQPEvent::AFTER_PROCESSING_MESSAGE;
+    const NAME = AMQPEvent::ON_ERROR;
 
     /**
      * @var Consumer
@@ -25,21 +27,28 @@ class AfterProcessingMessageEvent extends AMQPEvent
     private $AMQPMessage;
 
     /**
+     * @var Exception|Error
+     */
+    private $error;
+
+    /**
      * @var int|null
      */
     private $processFlag;
 
     /**
-     * AfterProcessingMessageEvent constructor.
+     * OnErrorEvent constructor.
      *
      * @param Consumer $consumer
      * @param AMQPMessage $AMQPMessage
-     * @param int|null $processFlag
+     * @param Exception|Error $error
+     * @param int $processFlag
      */
-    public function __construct(Consumer $consumer, AMQPMessage $AMQPMessage, ?int $processFlag = null)
+    public function __construct(Consumer $consumer, AMQPMessage $AMQPMessage, $error, ?int $processFlag)
     {
         $this->consumer = $consumer;
         $this->AMQPMessage = $AMQPMessage;
+        $this->error = $error;
         $this->processFlag = $processFlag;
     }
 
@@ -60,21 +69,26 @@ class AfterProcessingMessageEvent extends AMQPEvent
     }
 
     /**
+     * @return Error|Exception
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
      * @return int|null
      */
-    public function getProcessFlag(): ?int
+    public function getProcessFlag(): int
     {
         return $this->processFlag;
     }
 
     /**
      * @param int|null $processFlag
-     * @return $this
      */
-    public function setProcessFlag(?int $processFlag): AfterProcessingMessageEvent
+    public function setProcessFlag(?int $processFlag): void
     {
         $this->processFlag = $processFlag;
-
-        return $this;
     }
 }
